@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Play, Pause, RotateCcw, Settings } from 'lucide-react';
+import { Play, Pause, RotateCcw, Settings, Clock } from 'lucide-react';
 import { PomodoroSettings, Subtask } from '@/types';
+import { useCurrentTime } from '@/components/hooks/useCurrentTime';
+import { isTimeActive } from '@/utils/timeUtils';
 
 interface PomodoroTimerProps {
   settings: PomodoroSettings | null;
@@ -30,6 +32,10 @@ export default function PomodoroTimer({
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Hook para detectar si la subtarea está en su hora programada
+  const currentTime = useCurrentTime();
+  const isScheduled = currentSubtask ? isTimeActive(currentSubtask.scheduled_time) : false;
 
   useEffect(() => {
     if (settings) {
@@ -317,11 +323,25 @@ export default function PomodoroTimer({
         <>
           {/* Subtarea seleccionada */}
           {currentSubtask && (
-            <div className="mb-4 p-3 bg-orange/20 border-2 border-orange rounded-lg">
+            <div className={`
+              mb-4 p-3 rounded-lg transition-all duration-500
+              ${isScheduled
+                ? 'bg-gold/20 border-2 border-gold shadow-lg shadow-gold/50'
+                : 'bg-orange/20 border-2 border-orange'
+              }
+            `}>
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <p className="text-xs text-orange font-medium mb-1">Mini Tarea Seleccionada</p>
+                  <p className={`text-xs font-medium mb-1 ${isScheduled ? 'text-gold' : 'text-orange'}`}>
+                    {isScheduled ? '⭐ Mini Tarea ACTIVA' : 'Mini Tarea Seleccionada'}
+                  </p>
                   <p className="text-sm font-medium text-cream">{currentSubtask.title}</p>
+                  {currentSubtask.scheduled_time && (
+                    <div className={`flex items-center gap-1 mt-1 text-xs ${isScheduled ? 'text-gold font-semibold' : 'text-cream/60'}`}>
+                      <Clock className="w-3 h-3" />
+                      <span>{currentSubtask.scheduled_time}</span>
+                    </div>
+                  )}
                 </div>
                 <button
                   onClick={() => {
@@ -330,7 +350,7 @@ export default function PomodoroTimer({
                       setTimeLeft(settings.work_duration * 60);
                     }
                   }}
-                  className="text-xs text-orange hover:text-orange/80 active:text-orange/60 px-2 py-1"
+                  className={`text-xs px-2 py-1 ${isScheduled ? 'text-gold hover:text-gold/80 active:text-gold/60' : 'text-orange hover:text-orange/80 active:text-orange/60'}`}
                   disabled={isRunning}
                 >
                   Cancelar

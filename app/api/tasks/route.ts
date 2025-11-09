@@ -36,7 +36,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, description, task_date } = body;
+    const { title, description, task_date, scheduled_time } = body;
 
     if (!title || !task_date) {
       return NextResponse.json(
@@ -47,9 +47,12 @@ export async function POST(request: Request) {
 
     const supabase = createServerClient();
 
+    const insertData: any = { title, description, task_date };
+    if (scheduled_time) insertData.scheduled_time = scheduled_time;
+
     const { data, error } = await supabase
       .from('tasks')
-      .insert([{ title, description, task_date }])
+      .insert([insertData])
       .select()
       .single();
 

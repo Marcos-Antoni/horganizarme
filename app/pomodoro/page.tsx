@@ -85,12 +85,15 @@ export default function PomodoroPage() {
     }
   };
 
-  const handleSubtaskCreate = async (taskId: number | null, title: string, minutes: number) => {
+  const handleSubtaskCreate = async (taskId: number | null, title: string, minutes: number, scheduledTime?: string) => {
     try {
+      const body: any = { task_id: taskId, title, estimated_minutes: minutes };
+      if (scheduledTime) body.scheduled_time = scheduledTime;
+
       const res = await fetch('/api/subtasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ task_id: taskId, title, estimated_minutes: minutes }),
+        body: JSON.stringify(body),
       });
 
       if (res.ok) {

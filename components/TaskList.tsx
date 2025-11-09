@@ -3,13 +3,15 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Plus, Trash2, Check } from 'lucide-react';
+import { Plus, Trash2, Check, Clock } from 'lucide-react';
 import { Task } from '@/types';
+import { useCurrentTime } from '@/components/hooks/useCurrentTime';
+import { isTimeActive, formatTime } from '@/utils/timeUtils';
 
 interface TaskListProps {
   selectedDate: Date;
   tasks: Task[];
-  onTaskCreate: (title: string, description: string) => Promise<void>;
+  onTaskCreate: (title: string, description: string, scheduledTime?: string) => Promise<void>;
   onTaskToggle: (taskId: number, completed: boolean) => Promise<void>;
   onTaskDelete: (taskId: number) => Promise<void>;
 }
@@ -24,14 +26,24 @@ export default function TaskList({
   const [isAdding, setIsAdding] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskDescription, setNewTaskDescription] = useState('');
+  const [newTaskTime, setNewTaskTime] = useState('');
+
+  // Hook para detectar tareas activas en tiempo real
+  const currentTime = useCurrentTime();
+
+  // Obtener todas las horas programadas del día para la lógica de activación
+  const allScheduledTimes = tasks
+    .map(task => task.scheduled_time)
+    .filter((time): time is string => !!time);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTaskTitle.trim()) return;
 
-    await onTaskCreate(newTaskTitle, newTaskDescription);
+    await onTaskCreate(newTaskTitle, newTaskDescription, newTaskTime || undefined);
     setNewTaskTitle('');
     setNewTaskDescription('');
+    setNewTaskTime('');
     setIsAdding(false);
   };
 
@@ -66,9 +78,27 @@ export default function TaskList({
             placeholder="Descripción (opcional)"
             value={newTaskDescription}
             onChange={(e) => setNewTaskDescription(e.target.value)}
-            className="w-full px-3 py-2.5 sm:py-2 border border-gold/30 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-gold bg-navy/50 text-cream placeholder:text-cream/50 resize-none text-base"
+            className="w-full px-3 py-2.5 sm:py-2 border border-gold/30 rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-gold bg-navy/50 text-cream placeholder:text-cream/50 resize-none text-base"
             rows={3}
           />
+          <div className="mb-3">
+            <label className="flex items-center gap-2 text-sm font-medium text-cream/80 mb-2">
+              <Clock className="w-4 h-4 text-gold" />
+              Hora programada (opcional)
+            </label>
+            <div className="relative">
+              <input
+                type="time"
+                value={newTaskTime}
+                onChange={(e) => setNewTaskTime(e.target.value)}
+                className="w-full pl-10 pr-3 py-3 border-2 border-gold/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold bg-gold/5 text-cream text-base transition-all hover:border-gold/50"
+                style={{
+                  colorScheme: 'dark'
+                }}
+              />
+              <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gold/60 pointer-events-none" />
+            </div>
+          </div>
           <div className="flex gap-2">
             <button
               type="submit"
@@ -82,6 +112,7 @@ export default function TaskList({
                 setIsAdding(false);
                 setNewTaskTitle('');
                 setNewTaskDescription('');
+                setNewTaskTime('');
               }}
               className="flex-1 sm:flex-initial px-4 py-2.5 sm:py-2 bg-cream/20 text-cream rounded-lg hover:bg-cream/30 active:bg-cream/40 transition-colors touch-manipulation"
             >
@@ -98,47 +129,61 @@ export default function TaskList({
             No hay tareas para este día
           </p>
         ) : (
-          tasks.map((task) => (
-            <div
-              key={task.id}
-              className={`
-                p-3 sm:p-3 border rounded-lg hover:shadow-md hover:shadow-gold/10 transition-all
-                ${task.completed ? 'bg-navy/20 border-gold/10 opacity-75' : 'bg-navy/30 border-gold/20'}
-              `}
-            >
-              <div className="flex items-start gap-2 sm:gap-3">
-                <button
-                  onClick={() => onTaskToggle(task.id, !task.completed)}
-                  className={`
-                    mt-0.5 w-6 h-6 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center transition-colors touch-manipulation flex-shrink-0
-                    ${task.completed ? 'bg-gold border-gold' : 'border-gold/30 hover:border-gold active:border-gold/80'}
-                  `}
-                  aria-label={task.completed ? 'Marcar como no completada' : 'Marcar como completada'}
-                >
-                  {task.completed && <Check className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-navy" />}
-                </button>
+          tasks.map((task) => {
+            const isScheduled = isTimeActive(task.scheduled_time, allScheduledTimes);
+            return (
+              <div
+                key={task.id}
+                className={`
+                  p-3 sm:p-3 border rounded-lg hover:shadow-md transition-all duration-500
+                  ${isScheduled && !task.completed
+                    ? 'bg-gold/20 border-2 border-gold shadow-lg shadow-gold/50 hover:shadow-gold/30'
+                    : task.completed
+                      ? 'bg-navy/20 border-gold/10 opacity-75 hover:shadow-gold/10'
+                      : 'bg-navy/30 border-gold/20 hover:shadow-gold/10'
+                  }
+                `}
+              >
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <button
+                    onClick={() => onTaskToggle(task.id, !task.completed)}
+                    className={`
+                      mt-0.5 w-6 h-6 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center transition-colors touch-manipulation flex-shrink-0
+                      ${task.completed ? 'bg-gold border-gold' : 'border-gold/30 hover:border-gold active:border-gold/80'}
+                    `}
+                    aria-label={task.completed ? 'Marcar como no completada' : 'Marcar como completada'}
+                  >
+                    {task.completed && <Check className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-navy" />}
+                  </button>
 
-                <div className="flex-1 min-w-0">
-                  <h3 className={`font-medium text-sm sm:text-base break-words ${task.completed ? 'line-through text-cream/50' : 'text-cream'}`}>
-                    {task.title}
-                  </h3>
-                  {task.description && (
-                    <p className={`text-xs sm:text-sm mt-1 break-words ${task.completed ? 'line-through text-cream/40' : 'text-cream/70'}`}>
-                      {task.description}
-                    </p>
-                  )}
+                  <div className="flex-1 min-w-0">
+                    <h3 className={`font-medium text-sm sm:text-base break-words ${task.completed ? 'line-through text-cream/50' : 'text-cream'}`}>
+                      {task.title}
+                    </h3>
+                    {task.description && (
+                      <p className={`text-xs sm:text-sm mt-1 break-words ${task.completed ? 'line-through text-cream/40' : 'text-cream/70'}`}>
+                        {task.description}
+                      </p>
+                    )}
+                    {task.scheduled_time && (
+                      <div className={`flex items-center gap-1 mt-1 text-xs ${isScheduled && !task.completed ? 'text-gold font-semibold' : 'text-cream/60'}`}>
+                        <Clock className="w-3 h-3" />
+                        <span>{formatTime(task.scheduled_time)}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => onTaskDelete(task.id)}
+                    className="p-2 sm:p-1 text-red hover:bg-red/10 active:bg-red/20 rounded transition-colors touch-manipulation flex-shrink-0"
+                    aria-label="Eliminar tarea"
+                  >
+                    <Trash2 className="w-5 h-5 sm:w-4 sm:h-4" />
+                  </button>
                 </div>
-
-                <button
-                  onClick={() => onTaskDelete(task.id)}
-                  className="p-2 sm:p-1 text-red hover:bg-red/10 active:bg-red/20 rounded transition-colors touch-manipulation flex-shrink-0"
-                  aria-label="Eliminar tarea"
-                >
-                  <Trash2 className="w-5 h-5 sm:w-4 sm:h-4" />
-                </button>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>

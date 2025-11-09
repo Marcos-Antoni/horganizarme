@@ -9,7 +9,7 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { title, description, task_date, completed } = body;
+    const { title, description, task_date, scheduled_time, completed } = body;
 
     const supabase = createServerClient();
 
@@ -17,6 +17,7 @@ export async function PATCH(
     if (title !== undefined) updateData.title = title;
     if (description !== undefined) updateData.description = description;
     if (task_date !== undefined) updateData.task_date = task_date;
+    if (scheduled_time !== undefined) updateData.scheduled_time = scheduled_time;
     if (completed !== undefined) updateData.completed = completed;
 
     const { data, error } = await supabase

@@ -1,14 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Trash2, Check, Play } from 'lucide-react';
+import { Plus, Trash2, Check, Play, Clock } from 'lucide-react';
 import { Task, Subtask } from '@/types';
+import { useCurrentTime } from '@/components/hooks/useCurrentTime';
+import { isTimeActive, formatTime } from '@/utils/timeUtils';
 
 interface SubtasksListProps {
   tasks: Task[];
   subtasks: Subtask[];
   selectedSubtask: Subtask | null;
-  onSubtaskCreate: (taskId: number | null, title: string, minutes: number) => Promise<void>;
+  onSubtaskCreate: (taskId: number | null, title: string, minutes: number, scheduledTime?: string) => Promise<void>;
   onSubtaskToggle: (subtaskId: number, completed: boolean) => Promise<void>;
   onSubtaskDelete: (subtaskId: number) => Promise<void>;
   onSubtaskSelect: (subtask: Subtask) => void;
@@ -27,14 +29,25 @@ export default function SubtasksList({
   const [isAddingIndependent, setIsAddingIndependent] = useState(false);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [newSubtaskMinutes, setNewSubtaskMinutes] = useState(25);
+  const [newSubtaskTime, setNewSubtaskTime] = useState('');
   const [addingToTaskId, setAddingToTaskId] = useState<number | null>(null);
+
+  // Hook para obtener hora actual y detectar tareas activas
+  const currentTime = useCurrentTime();
+
+  // Obtener todas las horas programadas del día (tareas + subtareas)
+  const allScheduledTimes = [
+    ...tasks.map(task => task.scheduled_time),
+    ...subtasks.map(subtask => subtask.scheduled_time)
+  ].filter((time): time is string => !!time);
 
   const handleSubmit = async (taskId: number | null) => {
     if (!newSubtaskTitle.trim() || newSubtaskMinutes <= 0) return;
 
-    await onSubtaskCreate(taskId, newSubtaskTitle, newSubtaskMinutes);
+    await onSubtaskCreate(taskId, newSubtaskTitle, newSubtaskMinutes, newSubtaskTime || undefined);
     setNewSubtaskTitle('');
     setNewSubtaskMinutes(25);
+    setNewSubtaskTime('');
     setIsAddingIndependent(false);
     setAddingToTaskId(null);
   };
@@ -83,6 +96,24 @@ export default function SubtasksList({
               max="999"
             />
           </div>
+          <div className="mb-3">
+            <label className="flex items-center gap-2 text-sm font-medium text-cream/80 mb-2">
+              <Clock className="w-4 h-4 text-orange" />
+              Hora programada (opcional)
+            </label>
+            <div className="relative">
+              <input
+                type="time"
+                value={newSubtaskTime}
+                onChange={(e) => setNewSubtaskTime(e.target.value)}
+                className="w-full pl-10 pr-3 py-3 border-2 border-orange/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange focus:border-orange bg-orange/5 text-cream text-base transition-all hover:border-orange/50"
+                style={{
+                  colorScheme: 'dark'
+                }}
+              />
+              <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-orange/60 pointer-events-none" />
+            </div>
+          </div>
           <div className="flex gap-2">
             <button
               onClick={() => handleSubmit(null)}
@@ -95,6 +126,7 @@ export default function SubtasksList({
                 setIsAddingIndependent(false);
                 setNewSubtaskTitle('');
                 setNewSubtaskMinutes(25);
+                setNewSubtaskTime('');
               }}
               className="flex-1 sm:flex-initial px-4 py-2.5 sm:py-2 bg-cream/20 text-cream rounded-lg hover:bg-cream/30 active:bg-cream/40 transition-colors touch-manipulation"
             >
@@ -114,6 +146,7 @@ export default function SubtasksList({
                 key={subtask.id}
                 subtask={subtask}
                 isSelected={selectedSubtask?.id === subtask.id}
+                isScheduled={isTimeActive(subtask.scheduled_time, allScheduledTimes)}
                 onToggle={onSubtaskToggle}
                 onDelete={onSubtaskDelete}
                 onSelect={onSubtaskSelect}
@@ -134,9 +167,16 @@ export default function SubtasksList({
             const taskSubtasks = getSubtasksForTask(task.id);
             const isExpanded = expandedTaskId === task.id;
             const isAdding = addingToTaskId === task.id;
+            const isTaskScheduled = isTimeActive(task.scheduled_time, allScheduledTimes);
 
             return (
-              <div key={task.id} className="border border-gold/20 rounded-lg overflow-hidden bg-navy/30">
+              <div key={task.id} className={`
+                rounded-lg overflow-hidden transition-all duration-500
+                ${isTaskScheduled && !task.completed
+                  ? 'bg-gold/20 border-2 border-gold shadow-lg shadow-gold/50'
+                  : 'border border-gold/20 bg-navy/30'
+                }
+              `}>
                 <button
                   onClick={() => setExpandedTaskId(isExpanded ? null : task.id)}
                   className="w-full p-3 flex items-center justify-between hover:bg-gold/5 active:bg-gold/10 transition-colors"
@@ -145,9 +185,15 @@ export default function SubtasksList({
                     <h3 className={`font-medium text-sm sm:text-base ${task.completed ? 'line-through text-cream/50' : 'text-cream'}`}>
                       {task.title}
                     </h3>
-                    <p className="text-xs text-cream/60 mt-1">
-                      {taskSubtasks.length} mini {taskSubtasks.length === 1 ? 'tarea' : 'tareas'}
-                    </p>
+                    <div className="flex items-center gap-2 mt-1 text-xs text-cream/60">
+                      <span>{taskSubtasks.length} mini {taskSubtasks.length === 1 ? 'tarea' : 'tareas'}</span>
+                      {task.scheduled_time && (
+                        <span className={`flex items-center gap-1 ${isTaskScheduled && !task.completed ? 'text-gold font-semibold' : ''}`}>
+                          <Clock className="w-3 h-3" />
+                          {formatTime(task.scheduled_time)}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="text-cream/60">
                     {isExpanded ? '▼' : '▶'}
@@ -182,6 +228,22 @@ export default function SubtasksList({
                           placeholder="Minutos"
                           min="1"
                         />
+                        <label className="flex items-center gap-1.5 text-xs font-medium text-cream/80 mb-1">
+                          <Clock className="w-3.5 h-3.5 text-gold" />
+                          Hora programada (opcional)
+                        </label>
+                        <div className="relative mb-2">
+                          <input
+                            type="time"
+                            value={newSubtaskTime}
+                            onChange={(e) => setNewSubtaskTime(e.target.value)}
+                            className="w-full pl-9 pr-3 py-2.5 border-2 border-gold/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold focus:border-gold bg-gold/5 text-cream text-sm transition-all hover:border-gold/50"
+                            style={{
+                              colorScheme: 'dark'
+                            }}
+                          />
+                          <Clock className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gold/60 pointer-events-none" />
+                        </div>
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleSubmit(task.id)}
@@ -194,6 +256,7 @@ export default function SubtasksList({
                               setAddingToTaskId(null);
                               setNewSubtaskTitle('');
                               setNewSubtaskMinutes(25);
+                              setNewSubtaskTime('');
                             }}
                             className="flex-1 px-3 py-2 bg-cream/20 text-cream rounded-lg hover:bg-cream/30 active:bg-cream/40 transition-colors text-sm"
                           >
@@ -214,6 +277,7 @@ export default function SubtasksList({
                             key={subtask.id}
                             subtask={subtask}
                             isSelected={selectedSubtask?.id === subtask.id}
+                            isScheduled={isTimeActive(subtask.scheduled_time, allScheduledTimes)}
                             onToggle={onSubtaskToggle}
                             onDelete={onSubtaskDelete}
                             onSelect={onSubtaskSelect}
@@ -235,17 +299,23 @@ export default function SubtasksList({
 interface SubtaskItemProps {
   subtask: Subtask;
   isSelected: boolean;
+  isScheduled: boolean;
   onToggle: (id: number, completed: boolean) => void;
   onDelete: (id: number) => void;
   onSelect: (subtask: Subtask) => void;
 }
 
-function SubtaskItem({ subtask, isSelected, onToggle, onDelete, onSelect }: SubtaskItemProps) {
+function SubtaskItem({ subtask, isSelected, isScheduled, onToggle, onDelete, onSelect }: SubtaskItemProps) {
   return (
     <div
       className={`
-        p-2 rounded-lg flex items-center gap-2 transition-all
-        ${isSelected ? 'bg-orange/20 border-2 border-orange' : 'bg-navy/30 border border-gold/20'}
+        p-2 rounded-lg flex items-center gap-2 transition-all duration-500
+        ${isScheduled && !subtask.completed
+          ? 'bg-gold/20 border-2 border-gold shadow-lg shadow-gold/50'
+          : isSelected
+            ? 'bg-orange/20 border-2 border-orange'
+            : 'bg-navy/30 border border-gold/20'
+        }
         ${subtask.completed ? 'opacity-60' : ''}
       `}
     >
@@ -264,7 +334,15 @@ function SubtaskItem({ subtask, isSelected, onToggle, onDelete, onSelect }: Subt
         <p className={`text-xs sm:text-sm break-words ${subtask.completed ? 'line-through text-cream/50' : 'text-cream'}`}>
           {subtask.title}
         </p>
-        <p className="text-xs text-cream/60">{subtask.estimated_minutes} min</p>
+        <div className="flex items-center gap-2 text-xs text-cream/60">
+          <span>{subtask.estimated_minutes} min</span>
+          {subtask.scheduled_time && (
+            <span className={`flex items-center gap-1 ${isScheduled ? 'text-gold font-semibold' : ''}`}>
+              <Clock className="w-3 h-3" />
+              {formatTime(subtask.scheduled_time)}
+            </span>
+          )}
+        </div>
       </div>
 
       {!subtask.completed && (

@@ -3,6 +3,7 @@ export interface Task {
   title: string;
   description?: string;
   task_date: string;
+  scheduled_time?: string;
   completed: boolean;
   created_at: string;
   updated_at: string;
@@ -13,6 +14,7 @@ export interface Subtask {
   task_id?: number;
   title: string;
   estimated_minutes: number;
+  scheduled_time?: string;
   completed: boolean;
   started_at?: string;
   completed_at?: string;

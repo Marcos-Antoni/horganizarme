@@ -9,13 +9,14 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { title, estimated_minutes, completed, started_at, completed_at } = body;
+    const { title, estimated_minutes, scheduled_time, completed, started_at, completed_at } = body;
 
     const supabase = createServerClient();
 
     const updateData: any = { updated_at: new Date().toISOString() };
     if (title !== undefined) updateData.title = title;
     if (estimated_minutes !== undefined) updateData.estimated_minutes = estimated_minutes;
+    if (scheduled_time !== undefined) updateData.scheduled_time = scheduled_time;
     if (completed !== undefined) {
       updateData.completed = completed;
       // Si se marca como completada y no tiene completed_at, agregarlo

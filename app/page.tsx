@@ -52,13 +52,16 @@ export default function Home() {
     }
   };
 
-  const handleTaskCreate = async (title: string, description: string) => {
+  const handleTaskCreate = async (title: string, description: string, scheduledTime?: string) => {
     try {
       const dateString = format(selectedDate, 'yyyy-MM-dd');
+      const body: any = { title, description, task_date: dateString };
+      if (scheduledTime) body.scheduled_time = scheduledTime;
+
       const res = await fetch('/api/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, description, task_date: dateString }),
+        body: JSON.stringify(body),
       });
 
       if (res.ok) {

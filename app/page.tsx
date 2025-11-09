@@ -2,22 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
+import Link from 'next/link';
+import { Timer } from 'lucide-react';
 import Calendar from '@/components/Calendar';
 import TaskList from '@/components/TaskList';
-import PomodoroTimer from '@/components/PomodoroTimer';
-import { Task, PomodoroSettings } from '@/types';
+import { Task } from '@/types';
 
 export default function Home() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [tasks, setTasks] = useState<Task[]>([]);
   const [allTasks, setAllTasks] = useState<Task[]>([]);
-  const [pomodoroSettings, setPomodoroSettings] = useState<PomodoroSettings | null>(null);
   const [tasksCount, setTasksCount] = useState<Record<string, number>>({});
-
-  // Cargar configuración de Pomodoro
-  useEffect(() => {
-    fetchPomodoroSettings();
-  }, []);
 
   // Cargar todas las tareas para el contador del calendario
   useEffect(() => {
@@ -28,16 +23,6 @@ export default function Home() {
   useEffect(() => {
     fetchTasks(selectedDate);
   }, [selectedDate]);
-
-  const fetchPomodoroSettings = async () => {
-    try {
-      const res = await fetch('/api/pomodoro/settings');
-      const data = await res.json();
-      setPomodoroSettings(data.settings);
-    } catch (error) {
-      console.error('Error fetching pomodoro settings:', error);
-    }
-  };
 
   const fetchAllTasks = async () => {
     try {
@@ -117,47 +102,30 @@ export default function Home() {
     }
   };
 
-  const handlePomodoroSettingsUpdate = async (settings: Partial<PomodoroSettings>) => {
-    try {
-      const res = await fetch('/api/pomodoro/settings', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settings),
-      });
-
-      if (res.ok) {
-        await fetchPomodoroSettings();
-      }
-    } catch (error) {
-      console.error('Error updating pomodoro settings:', error);
-    }
-  };
-
-  const handleSessionComplete = async (sessionType: string, duration: number) => {
-    try {
-      await fetch('/api/pomodoro/sessions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ session_type: sessionType, duration }),
-      });
-    } catch (error) {
-      console.error('Error creating pomodoro session:', error);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-gray-900">Horganizar</h1>
-          <p className="text-sm text-gray-600">Organiza tu tiempo y aumenta tu productividad</p>
+      <header className="bg-white shadow-sm sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">Horganizar</h1>
+              <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">Organiza tu tiempo y aumenta tu productividad</p>
+            </div>
+            <Link
+              href="/pomodoro"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 active:bg-red-700 transition-colors touch-manipulation flex-shrink-0"
+            >
+              <Timer className="w-5 h-5" />
+              <span className="hidden sm:inline text-sm sm:text-base">Pomodoro</span>
+            </Link>
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Calendario */}
           <div className="lg:col-span-1">
             <Calendar
@@ -175,15 +143,6 @@ export default function Home() {
               onTaskCreate={handleTaskCreate}
               onTaskToggle={handleTaskToggle}
               onTaskDelete={handleTaskDelete}
-            />
-          </div>
-
-          {/* Temporizador Pomodoro */}
-          <div className="lg:col-span-3">
-            <PomodoroTimer
-              settings={pomodoroSettings}
-              onSettingsUpdate={handlePomodoroSettingsUpdate}
-              onSessionComplete={handleSessionComplete}
             />
           </div>
         </div>

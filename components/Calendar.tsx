@@ -35,37 +35,40 @@ export default function Calendar({ selectedDate, onDateSelect, tasksCount = {} }
   const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4">
+    <div className="bg-white rounded-lg shadow-md p-3 sm:p-4">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
         <button
           onClick={previousMonth}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-2 sm:p-2 hover:bg-gray-100 active:bg-gray-200 rounded-full transition-colors touch-manipulation"
+          aria-label="Mes anterior"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-6 h-6 sm:w-5 sm:h-5" />
         </button>
-        <h2 className="text-lg font-semibold capitalize">
+        <h2 className="text-base sm:text-lg font-semibold capitalize">
           {format(currentMonth, 'MMMM yyyy', { locale: es })}
         </h2>
         <button
           onClick={nextMonth}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-2 sm:p-2 hover:bg-gray-100 active:bg-gray-200 rounded-full transition-colors touch-manipulation"
+          aria-label="Mes siguiente"
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-6 h-6 sm:w-5 sm:h-5" />
         </button>
       </div>
 
       {/* Días de la semana */}
-      <div className="grid grid-cols-7 gap-1 mb-2">
-        {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map((day) => (
-          <div key={day} className="text-center text-xs font-medium text-gray-500 py-2">
-            {day}
+      <div className="grid grid-cols-7 gap-0.5 sm:gap-1 mb-1 sm:mb-2">
+        {['D', 'L', 'M', 'X', 'J', 'V', 'S'].map((day, index) => (
+          <div key={day} className="text-center text-xs sm:text-xs font-medium text-gray-500 py-1 sm:py-2">
+            <span className="sm:hidden">{day}</span>
+            <span className="hidden sm:inline">{['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'][index]}</span>
           </div>
         ))}
       </div>
 
       {/* Días del mes */}
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
         {/* Espacios vacíos antes del primer día */}
         {Array.from({ length: firstDayOfWeek }).map((_, index) => (
           <div key={`empty-${index}`} className="aspect-square" />
@@ -83,22 +86,24 @@ export default function Calendar({ selectedDate, onDateSelect, tasksCount = {} }
               key={day.toString()}
               onClick={() => onDateSelect(day)}
               className={`
-                aspect-square p-1 rounded-lg text-sm font-medium transition-all
-                ${isSelected ? 'bg-blue-500 text-white shadow-md' : 'hover:bg-gray-100'}
+                aspect-square p-1 sm:p-1 rounded-lg text-sm sm:text-sm font-medium transition-all touch-manipulation
+                ${isSelected ? 'bg-blue-500 text-white shadow-md scale-105' : 'hover:bg-gray-100 active:bg-gray-200'}
                 ${isTodayDate && !isSelected ? 'border-2 border-blue-500' : ''}
                 ${!isSameMonth(day, currentMonth) ? 'text-gray-300' : 'text-gray-900'}
-                relative
+                relative flex items-center justify-center min-h-[2.5rem] sm:min-h-0
               `}
             >
-              <div>{format(day, 'd')}</div>
-              {count > 0 && (
-                <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2">
-                  <div className={`
-                    w-1.5 h-1.5 rounded-full
-                    ${isSelected ? 'bg-white' : 'bg-blue-500'}
-                  `} />
-                </div>
-              )}
+              <div className="relative">
+                <div>{format(day, 'd')}</div>
+                {count > 0 && (
+                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
+                    <div className={`
+                      w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full
+                      ${isSelected ? 'bg-white' : 'bg-blue-500'}
+                    `} />
+                  </div>
+                )}
+              </div>
             </button>
           );
         })}

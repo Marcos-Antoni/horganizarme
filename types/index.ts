@@ -8,6 +8,18 @@ export interface Task {
   updated_at: string;
 }
 
+export interface Subtask {
+  id: number;
+  task_id?: number;
+  title: string;
+  estimated_minutes: number;
+  completed: boolean;
+  started_at?: string;
+  completed_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface PomodoroSettings {
   id: number;
   work_duration: number;

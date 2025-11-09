@@ -36,14 +36,14 @@ export default function TaskList({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-3 sm:p-4">
+    <div className="bg-navy/50 border border-gold/20 rounded-lg shadow-lg p-3 sm:p-4">
       <div className="flex items-center justify-between mb-3 sm:mb-4 gap-2">
-        <h2 className="text-base sm:text-lg font-semibold">
+        <h2 className="text-base sm:text-lg font-semibold text-cream">
           Tareas del {format(selectedDate, "d 'de' MMMM", { locale: es })}
         </h2>
         <button
           onClick={() => setIsAdding(true)}
-          className="flex items-center gap-1 sm:gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 active:bg-blue-700 transition-colors touch-manipulation text-sm sm:text-base whitespace-nowrap"
+          className="flex items-center gap-1 sm:gap-2 px-3 py-2 bg-gold text-navy rounded-lg hover:bg-gold/90 active:bg-gold/80 transition-colors touch-manipulation text-sm sm:text-base whitespace-nowrap font-medium"
         >
           <Plus className="w-4 h-4 sm:w-4 sm:h-4" />
           <span className="hidden sm:inline">Nueva Tarea</span>
@@ -53,26 +53,26 @@ export default function TaskList({
 
       {/* Formulario para nueva tarea */}
       {isAdding && (
-        <form onSubmit={handleSubmit} className="mb-3 sm:mb-4 p-3 sm:p-4 border border-gray-200 rounded-lg">
+        <form onSubmit={handleSubmit} className="mb-3 sm:mb-4 p-3 sm:p-4 border border-gold/20 rounded-lg bg-navy/30">
           <input
             type="text"
             placeholder="Título de la tarea"
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
-            className="w-full px-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+            className="w-full px-3 py-2.5 sm:py-2 border border-gold/30 rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-gold bg-navy/50 text-cream placeholder:text-cream/50 text-base"
             autoFocus
           />
           <textarea
             placeholder="Descripción (opcional)"
             value={newTaskDescription}
             onChange={(e) => setNewTaskDescription(e.target.value)}
-            className="w-full px-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-base"
+            className="w-full px-3 py-2.5 sm:py-2 border border-gold/30 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-gold bg-navy/50 text-cream placeholder:text-cream/50 resize-none text-base"
             rows={3}
           />
           <div className="flex gap-2">
             <button
               type="submit"
-              className="flex-1 sm:flex-initial px-4 py-2.5 sm:py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 active:bg-blue-700 transition-colors touch-manipulation"
+              className="flex-1 sm:flex-initial px-4 py-2.5 sm:py-2 bg-gold text-navy rounded-lg hover:bg-gold/90 active:bg-gold/80 transition-colors touch-manipulation font-medium"
             >
               Agregar
             </button>
@@ -83,7 +83,7 @@ export default function TaskList({
                 setNewTaskTitle('');
                 setNewTaskDescription('');
               }}
-              className="flex-1 sm:flex-initial px-4 py-2.5 sm:py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 active:bg-gray-400 transition-colors touch-manipulation"
+              className="flex-1 sm:flex-initial px-4 py-2.5 sm:py-2 bg-cream/20 text-cream rounded-lg hover:bg-cream/30 active:bg-cream/40 transition-colors touch-manipulation"
             >
               Cancelar
             </button>
@@ -94,7 +94,7 @@ export default function TaskList({
       {/* Lista de tareas */}
       <div className="space-y-2">
         {tasks.length === 0 ? (
-          <p className="text-center text-gray-400 py-8 text-sm sm:text-base">
+          <p className="text-center text-cream/50 py-8 text-sm sm:text-base">
             No hay tareas para este día
           </p>
         ) : (
@@ -102,8 +102,8 @@ export default function TaskList({
             <div
               key={task.id}
               className={`
-                p-3 sm:p-3 border border-gray-200 rounded-lg hover:shadow-md transition-all
-                ${task.completed ? 'bg-gray-50 opacity-75' : 'bg-white'}
+                p-3 sm:p-3 border rounded-lg hover:shadow-md hover:shadow-gold/10 transition-all
+                ${task.completed ? 'bg-navy/20 border-gold/10 opacity-75' : 'bg-navy/30 border-gold/20'}
               `}
             >
               <div className="flex items-start gap-2 sm:gap-3">
@@ -111,19 +111,19 @@ export default function TaskList({
                   onClick={() => onTaskToggle(task.id, !task.completed)}
                   className={`
                     mt-0.5 w-6 h-6 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center transition-colors touch-manipulation flex-shrink-0
-                    ${task.completed ? 'bg-green-500 border-green-500' : 'border-gray-300 hover:border-green-500 active:border-green-600'}
+                    ${task.completed ? 'bg-gold border-gold' : 'border-gold/30 hover:border-gold active:border-gold/80'}
                   `}
                   aria-label={task.completed ? 'Marcar como no completada' : 'Marcar como completada'}
                 >
-                  {task.completed && <Check className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-white" />}
+                  {task.completed && <Check className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-navy" />}
                 </button>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className={`font-medium text-sm sm:text-base break-words ${task.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                  <h3 className={`font-medium text-sm sm:text-base break-words ${task.completed ? 'line-through text-cream/50' : 'text-cream'}`}>
                     {task.title}
                   </h3>
                   {task.description && (
-                    <p className={`text-xs sm:text-sm mt-1 break-words ${task.completed ? 'line-through text-gray-400' : 'text-gray-600'}`}>
+                    <p className={`text-xs sm:text-sm mt-1 break-words ${task.completed ? 'line-through text-cream/40' : 'text-cream/70'}`}>
                       {task.description}
                     </p>
                   )}
@@ -131,7 +131,7 @@ export default function TaskList({
 
                 <button
                   onClick={() => onTaskDelete(task.id)}
-                  className="p-2 sm:p-1 text-red-500 hover:bg-red-50 active:bg-red-100 rounded transition-colors touch-manipulation flex-shrink-0"
+                  className="p-2 sm:p-1 text-red hover:bg-red/10 active:bg-red/20 rounded transition-colors touch-manipulation flex-shrink-0"
                   aria-label="Eliminar tarea"
                 >
                   <Trash2 className="w-5 h-5 sm:w-4 sm:h-4" />

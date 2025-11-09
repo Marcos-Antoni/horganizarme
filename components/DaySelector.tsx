@@ -17,24 +17,24 @@ export default function DaySelector({ selectedDate, onDateChange }: DaySelectorP
   const isTodaySelected = isToday(selectedDate);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-3 sm:p-4">
+    <div className="bg-navy/50 border border-gold/20 rounded-lg shadow-lg p-3 sm:p-4">
       <div className="flex items-center justify-between gap-2">
         <button
           onClick={goToPreviousDay}
-          className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-full transition-colors touch-manipulation"
+          className="p-2 hover:bg-gold/10 active:bg-gold/20 rounded-full transition-colors touch-manipulation text-cream"
           aria-label="Día anterior"
         >
           <ChevronLeft className="w-6 h-6 sm:w-5 sm:h-5" />
         </button>
 
         <div className="flex-1 text-center">
-          <div className="text-base sm:text-lg font-semibold capitalize">
+          <div className="text-base sm:text-lg font-semibold capitalize text-cream">
             {format(selectedDate, "EEEE, d 'de' MMMM", { locale: es })}
           </div>
           {!isTodaySelected && (
             <button
               onClick={goToToday}
-              className="mt-1 text-xs sm:text-sm text-blue-500 hover:text-blue-600 active:text-blue-700 transition-colors touch-manipulation inline-flex items-center gap-1"
+              className="mt-1 text-xs sm:text-sm text-gold hover:text-gold/80 active:text-gold/60 transition-colors touch-manipulation inline-flex items-center gap-1"
             >
               <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               Ir a hoy
@@ -44,7 +44,7 @@ export default function DaySelector({ selectedDate, onDateChange }: DaySelectorP
 
         <button
           onClick={goToNextDay}
-          className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-full transition-colors touch-manipulation"
+          className="p-2 hover:bg-gold/10 active:bg-gold/20 rounded-full transition-colors touch-manipulation text-cream"
           aria-label="Día siguiente"
         >
           <ChevronRight className="w-6 h-6 sm:w-5 sm:h-5" />

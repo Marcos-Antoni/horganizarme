@@ -144,19 +144,19 @@ export default function PomodoroPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-navy">
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-10">
+      <header className="bg-navy border-b border-orange/20 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 sm:gap-2 text-gray-600 hover:text-gray-900 active:text-gray-950 mb-2 transition-colors touch-manipulation"
+            className="inline-flex items-center gap-1.5 sm:gap-2 text-cream/70 hover:text-cream active:text-cream mb-2 transition-colors touch-manipulation"
           >
             <ArrowLeft className="w-5 h-5 sm:w-4 sm:h-4" />
             <span className="text-sm sm:text-base">Volver a Tareas</span>
           </Link>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Temporizador Pomodoro</h1>
-          <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">Aumenta tu productividad con la técnica Pomodoro</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-cream">Temporizador Pomodoro</h1>
+          <p className="text-xs sm:text-sm text-cream/70 hidden sm:block">Aumenta tu productividad con la técnica Pomodoro</p>
         </div>
       </header>
 

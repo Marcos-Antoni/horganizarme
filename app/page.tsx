@@ -103,18 +103,18 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-navy">
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-10">
+      <header className="bg-navy border-b border-orange/20 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between gap-2">
             <div className="min-w-0 flex-1">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">Horganizar</h1>
-              <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">Organiza tu tiempo y aumenta tu productividad</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-cream truncate">Horganizar</h1>
+              <p className="text-xs sm:text-sm text-cream/70 hidden sm:block">Organiza tu tiempo y aumenta tu productividad</p>
             </div>
             <Link
               href="/pomodoro"
-              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 active:bg-red-700 transition-colors touch-manipulation flex-shrink-0"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 bg-orange text-cream rounded-lg hover:bg-orange/90 active:bg-orange/80 transition-colors touch-manipulation flex-shrink-0 font-medium"
             >
               <Timer className="w-5 h-5" />
               <span className="hidden sm:inline text-sm sm:text-base">Pomodoro</span>

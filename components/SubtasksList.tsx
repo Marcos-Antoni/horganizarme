@@ -46,12 +46,12 @@ export default function SubtasksList({
   const independentSubtasks = subtasks.filter(st => !st.task_id);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-3 sm:p-4">
+    <div className="bg-navy/50 border border-gold/20 rounded-lg shadow-lg p-3 sm:p-4">
       <div className="flex items-center justify-between mb-3 sm:mb-4">
-        <h2 className="text-base sm:text-lg font-semibold">Mini Tareas</h2>
+        <h2 className="text-base sm:text-lg font-semibold text-cream">Mini Tareas</h2>
         <button
           onClick={() => setIsAddingIndependent(true)}
-          className="flex items-center gap-1 sm:gap-2 px-3 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 active:bg-purple-700 transition-colors touch-manipulation text-sm sm:text-base whitespace-nowrap"
+          className="flex items-center gap-1 sm:gap-2 px-3 py-2 bg-orange text-cream rounded-lg hover:bg-orange/90 active:bg-orange/80 transition-colors touch-manipulation text-sm sm:text-base whitespace-nowrap font-medium"
         >
           <Plus className="w-4 h-4" />
           <span className="hidden sm:inline">Nueva</span>
@@ -60,25 +60,25 @@ export default function SubtasksList({
 
       {/* Formulario para mini tarea independiente */}
       {isAddingIndependent && (
-        <div className="mb-3 p-3 sm:p-4 border-2 border-purple-200 rounded-lg bg-purple-50">
-          <h3 className="text-sm font-medium mb-2">Mini tarea independiente</h3>
+        <div className="mb-3 p-3 sm:p-4 border-2 border-orange/30 rounded-lg bg-navy/30">
+          <h3 className="text-sm font-medium mb-2 text-cream">Mini tarea independiente</h3>
           <input
             type="text"
             placeholder="Título de la mini tarea"
             value={newSubtaskTitle}
             onChange={(e) => setNewSubtaskTitle(e.target.value)}
-            className="w-full px-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-purple-500 text-base"
+            className="w-full px-3 py-2.5 sm:py-2 border border-gold/30 rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-orange bg-navy/50 text-cream placeholder:text-cream/50 text-base"
             autoFocus
           />
           <div className="mb-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-cream/80 mb-1">
               Tiempo estimado (minutos)
             </label>
             <input
               type="number"
               value={newSubtaskMinutes}
               onChange={(e) => setNewSubtaskMinutes(parseInt(e.target.value) || 0)}
-              className="w-full px-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-base"
+              className="w-full px-3 py-2.5 sm:py-2 border border-gold/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange bg-navy/50 text-cream text-base"
               min="1"
               max="999"
             />
@@ -86,7 +86,7 @@ export default function SubtasksList({
           <div className="flex gap-2">
             <button
               onClick={() => handleSubmit(null)}
-              className="flex-1 sm:flex-initial px-4 py-2.5 sm:py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 active:bg-purple-700 transition-colors touch-manipulation"
+              className="flex-1 sm:flex-initial px-4 py-2.5 sm:py-2 bg-orange text-cream rounded-lg hover:bg-orange/90 active:bg-orange/80 transition-colors touch-manipulation font-medium"
             >
               Agregar
             </button>
@@ -96,7 +96,7 @@ export default function SubtasksList({
                 setNewSubtaskTitle('');
                 setNewSubtaskMinutes(25);
               }}
-              className="flex-1 sm:flex-initial px-4 py-2.5 sm:py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 active:bg-gray-400 transition-colors touch-manipulation"
+              className="flex-1 sm:flex-initial px-4 py-2.5 sm:py-2 bg-cream/20 text-cream rounded-lg hover:bg-cream/30 active:bg-cream/40 transition-colors touch-manipulation"
             >
               Cancelar
             </button>
@@ -107,7 +107,7 @@ export default function SubtasksList({
       {/* Mini tareas independientes */}
       {independentSubtasks.length > 0 && (
         <div className="mb-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-2">Sin tarea asignada</h3>
+          <h3 className="text-sm font-medium text-cream/70 mb-2">Sin tarea asignada</h3>
           <div className="space-y-2">
             {independentSubtasks.map((subtask) => (
               <SubtaskItem
@@ -125,7 +125,7 @@ export default function SubtasksList({
 
       {/* Tareas con sus mini tareas */}
       {tasks.length === 0 && independentSubtasks.length === 0 ? (
-        <p className="text-center text-gray-400 py-8 text-sm sm:text-base">
+        <p className="text-center text-cream/50 py-8 text-sm sm:text-base">
           No hay tareas ni mini tareas para este día
         </p>
       ) : (
@@ -136,56 +136,56 @@ export default function SubtasksList({
             const isAdding = addingToTaskId === task.id;
 
             return (
-              <div key={task.id} className="border border-gray-200 rounded-lg overflow-hidden">
+              <div key={task.id} className="border border-gold/20 rounded-lg overflow-hidden bg-navy/30">
                 <button
                   onClick={() => setExpandedTaskId(isExpanded ? null : task.id)}
-                  className="w-full p-3 flex items-center justify-between hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                  className="w-full p-3 flex items-center justify-between hover:bg-gold/5 active:bg-gold/10 transition-colors"
                 >
                   <div className="flex-1 text-left">
-                    <h3 className={`font-medium text-sm sm:text-base ${task.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                    <h3 className={`font-medium text-sm sm:text-base ${task.completed ? 'line-through text-cream/50' : 'text-cream'}`}>
                       {task.title}
                     </h3>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-cream/60 mt-1">
                       {taskSubtasks.length} mini {taskSubtasks.length === 1 ? 'tarea' : 'tareas'}
                     </p>
                   </div>
-                  <div className="text-gray-400">
+                  <div className="text-cream/60">
                     {isExpanded ? '▼' : '▶'}
                   </div>
                 </button>
 
                 {isExpanded && (
-                  <div className="px-3 pb-3 bg-gray-50">
+                  <div className="px-3 pb-3 bg-navy/20">
                     <button
                       onClick={() => setAddingToTaskId(task.id)}
-                      className="w-full mb-2 flex items-center justify-center gap-2 px-3 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation text-sm"
+                      className="w-full mb-2 flex items-center justify-center gap-2 px-3 py-2 bg-navy/50 border border-gold/20 text-cream rounded-lg hover:bg-gold/10 active:bg-gold/20 transition-colors touch-manipulation text-sm"
                     >
                       <Plus className="w-4 h-4" />
                       Agregar mini tarea
                     </button>
 
                     {isAdding && (
-                      <div className="mb-2 p-3 border border-gray-200 rounded-lg bg-white">
+                      <div className="mb-2 p-3 border border-gold/20 rounded-lg bg-navy/30">
                         <input
                           type="text"
                           placeholder="Título"
                           value={newSubtaskTitle}
                           onChange={(e) => setNewSubtaskTitle(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          className="w-full px-3 py-2 border border-gold/30 rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-gold bg-navy/50 text-cream placeholder:text-cream/50 text-sm"
                           autoFocus
                         />
                         <input
                           type="number"
                           value={newSubtaskMinutes}
                           onChange={(e) => setNewSubtaskMinutes(parseInt(e.target.value) || 0)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          className="w-full px-3 py-2 border border-gold/30 rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-gold bg-navy/50 text-cream placeholder:text-cream/50 text-sm"
                           placeholder="Minutos"
                           min="1"
                         />
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleSubmit(task.id)}
-                            className="flex-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 active:bg-blue-700 transition-colors text-sm"
+                            className="flex-1 px-3 py-2 bg-gold text-navy rounded-lg hover:bg-gold/90 active:bg-gold/80 transition-colors text-sm font-medium"
                           >
                             Agregar
                           </button>
@@ -195,7 +195,7 @@ export default function SubtasksList({
                               setNewSubtaskTitle('');
                               setNewSubtaskMinutes(25);
                             }}
-                            className="flex-1 px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 active:bg-gray-400 transition-colors text-sm"
+                            className="flex-1 px-3 py-2 bg-cream/20 text-cream rounded-lg hover:bg-cream/30 active:bg-cream/40 transition-colors text-sm"
                           >
                             Cancelar
                           </button>
@@ -205,7 +205,7 @@ export default function SubtasksList({
 
                     <div className="space-y-1">
                       {taskSubtasks.length === 0 ? (
-                        <p className="text-center text-gray-400 py-4 text-xs">
+                        <p className="text-center text-cream/50 py-4 text-xs">
                           No hay mini tareas
                         </p>
                       ) : (
@@ -245,7 +245,7 @@ function SubtaskItem({ subtask, isSelected, onToggle, onDelete, onSelect }: Subt
     <div
       className={`
         p-2 rounded-lg flex items-center gap-2 transition-all
-        ${isSelected ? 'bg-blue-100 border-2 border-blue-500' : 'bg-white border border-gray-200'}
+        ${isSelected ? 'bg-orange/20 border-2 border-orange' : 'bg-navy/30 border border-gold/20'}
         ${subtask.completed ? 'opacity-60' : ''}
       `}
     >
@@ -253,18 +253,18 @@ function SubtaskItem({ subtask, isSelected, onToggle, onDelete, onSelect }: Subt
         onClick={() => onToggle(subtask.id, !subtask.completed)}
         className={`
           w-5 h-5 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center transition-colors touch-manipulation flex-shrink-0
-          ${subtask.completed ? 'bg-green-500 border-green-500' : 'border-gray-300 hover:border-green-500 active:border-green-600'}
+          ${subtask.completed ? 'bg-gold border-gold' : 'border-gold/30 hover:border-gold active:border-gold/80'}
         `}
         aria-label={subtask.completed ? 'Marcar como no completada' : 'Marcar como completada'}
       >
-        {subtask.completed && <Check className="w-3 h-3 text-white" />}
+        {subtask.completed && <Check className="w-3 h-3 text-navy" />}
       </button>
 
       <div className="flex-1 min-w-0">
-        <p className={`text-xs sm:text-sm break-words ${subtask.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+        <p className={`text-xs sm:text-sm break-words ${subtask.completed ? 'line-through text-cream/50' : 'text-cream'}`}>
           {subtask.title}
         </p>
-        <p className="text-xs text-gray-500">{subtask.estimated_minutes} min</p>
+        <p className="text-xs text-cream/60">{subtask.estimated_minutes} min</p>
       </div>
 
       {!subtask.completed && (
@@ -272,7 +272,7 @@ function SubtaskItem({ subtask, isSelected, onToggle, onDelete, onSelect }: Subt
           onClick={() => onSelect(subtask)}
           className={`
             p-1.5 sm:p-1.5 rounded transition-colors touch-manipulation flex-shrink-0
-            ${isSelected ? 'bg-blue-500 text-white' : 'bg-blue-50 text-blue-500 hover:bg-blue-100 active:bg-blue-200'}
+            ${isSelected ? 'bg-orange text-cream' : 'bg-orange/20 text-orange hover:bg-orange/30 active:bg-orange/40'}
           `}
           aria-label="Usar en Pomodoro"
         >
@@ -282,7 +282,7 @@ function SubtaskItem({ subtask, isSelected, onToggle, onDelete, onSelect }: Subt
 
       <button
         onClick={() => onDelete(subtask.id)}
-        className="p-1.5 text-red-500 hover:bg-red-50 active:bg-red-100 rounded transition-colors touch-manipulation flex-shrink-0"
+        className="p-1.5 text-red hover:bg-red/10 active:bg-red/20 rounded transition-colors touch-manipulation flex-shrink-0"
         aria-label="Eliminar"
       >
         <Trash2 className="w-4 h-4" />

@@ -216,11 +216,11 @@ export default function PomodoroTimer({
   const getSessionColor = () => {
     switch (sessionType) {
       case 'work':
-        return 'bg-red-500';
+        return 'bg-red';
       case 'short_break':
-        return 'bg-green-500';
+        return 'bg-gold';
       case 'long_break':
-        return 'bg-blue-500';
+        return 'bg-orange';
     }
   };
 
@@ -236,16 +236,16 @@ export default function PomodoroTimer({
   };
 
   if (!settings) {
-    return <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">Cargando...</div>;
+    return <div className="bg-navy/50 border border-gold/20 rounded-lg shadow-lg p-4 sm:p-6 text-cream">Cargando...</div>;
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+    <div className="bg-navy/50 border border-gold/20 rounded-lg shadow-lg p-4 sm:p-6">
       <div className="flex items-center justify-between mb-4 sm:mb-4">
-        <h2 className="text-lg sm:text-lg font-semibold">Pomodoro</h2>
+        <h2 className="text-lg sm:text-lg font-semibold text-cream">Pomodoro</h2>
         <button
           onClick={() => setShowSettings(!showSettings)}
-          className="p-2 sm:p-2 hover:bg-gray-100 active:bg-gray-200 rounded-full transition-colors touch-manipulation"
+          className="p-2 sm:p-2 hover:bg-gold/10 active:bg-gold/20 rounded-full transition-colors touch-manipulation text-cream"
           aria-label="Configuración"
         >
           <Settings className="w-6 h-6 sm:w-5 sm:h-5" />
@@ -255,59 +255,59 @@ export default function PomodoroTimer({
       {showSettings ? (
         <div className="space-y-4">
           <div>
-            <label className="block text-sm sm:text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm sm:text-sm font-medium text-cream/80 mb-1">
               Duración de trabajo (minutos)
             </label>
             <input
               type="number"
               value={editSettings.work_duration || 25}
               onChange={(e) => setEditSettings({ ...editSettings, work_duration: parseInt(e.target.value) })}
-              className="w-full px-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+              className="w-full px-3 py-2.5 sm:py-2 border border-gold/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold bg-navy/50 text-cream text-base"
             />
           </div>
           <div>
-            <label className="block text-sm sm:text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm sm:text-sm font-medium text-cream/80 mb-1">
               Descanso corto (minutos)
             </label>
             <input
               type="number"
               value={editSettings.short_break || 5}
               onChange={(e) => setEditSettings({ ...editSettings, short_break: parseInt(e.target.value) })}
-              className="w-full px-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+              className="w-full px-3 py-2.5 sm:py-2 border border-gold/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold bg-navy/50 text-cream text-base"
             />
           </div>
           <div>
-            <label className="block text-sm sm:text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm sm:text-sm font-medium text-cream/80 mb-1">
               Descanso largo (minutos)
             </label>
             <input
               type="number"
               value={editSettings.long_break || 15}
               onChange={(e) => setEditSettings({ ...editSettings, long_break: parseInt(e.target.value) })}
-              className="w-full px-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+              className="w-full px-3 py-2.5 sm:py-2 border border-gold/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold bg-navy/50 text-cream text-base"
             />
           </div>
           <div>
-            <label className="block text-sm sm:text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm sm:text-sm font-medium text-cream/80 mb-1">
               Sesiones hasta descanso largo
             </label>
             <input
               type="number"
               value={editSettings.sessions_until_long_break || 4}
               onChange={(e) => setEditSettings({ ...editSettings, sessions_until_long_break: parseInt(e.target.value) })}
-              className="w-full px-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+              className="w-full px-3 py-2.5 sm:py-2 border border-gold/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold bg-navy/50 text-cream text-base"
             />
           </div>
           <div className="flex gap-2">
             <button
               onClick={handleSettingsSave}
-              className="flex-1 px-4 py-2.5 sm:py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 active:bg-blue-700 transition-colors touch-manipulation"
+              className="flex-1 px-4 py-2.5 sm:py-2 bg-gold text-navy rounded-lg hover:bg-gold/90 active:bg-gold/80 transition-colors touch-manipulation font-medium"
             >
               Guardar
             </button>
             <button
               onClick={() => setShowSettings(false)}
-              className="flex-1 px-4 py-2.5 sm:py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 active:bg-gray-400 transition-colors touch-manipulation"
+              className="flex-1 px-4 py-2.5 sm:py-2 bg-cream/20 text-cream rounded-lg hover:bg-cream/30 active:bg-cream/40 transition-colors touch-manipulation"
             >
               Cancelar
             </button>
@@ -317,11 +317,11 @@ export default function PomodoroTimer({
         <>
           {/* Subtarea seleccionada */}
           {currentSubtask && (
-            <div className="mb-4 p-3 bg-blue-50 border-2 border-blue-200 rounded-lg">
+            <div className="mb-4 p-3 bg-orange/20 border-2 border-orange rounded-lg">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <p className="text-xs text-blue-600 font-medium mb-1">Mini Tarea Seleccionada</p>
-                  <p className="text-sm font-medium text-gray-900">{currentSubtask.title}</p>
+                  <p className="text-xs text-orange font-medium mb-1">Mini Tarea Seleccionada</p>
+                  <p className="text-sm font-medium text-cream">{currentSubtask.title}</p>
                 </div>
                 <button
                   onClick={() => {
@@ -330,7 +330,7 @@ export default function PomodoroTimer({
                       setTimeLeft(settings.work_duration * 60);
                     }
                   }}
-                  className="text-xs text-blue-600 hover:text-blue-700 active:text-blue-800 px-2 py-1"
+                  className="text-xs text-orange hover:text-orange/80 active:text-orange/60 px-2 py-1"
                   disabled={isRunning}
                 >
                   Cancelar
@@ -341,17 +341,17 @@ export default function PomodoroTimer({
 
           {/* Indicador de sesión */}
           <div className="text-center mb-6 sm:mb-4">
-            <span className={`inline-block px-5 py-2.5 sm:px-4 sm:py-2 rounded-full text-white text-base sm:text-base font-medium ${getSessionColor()}`}>
+            <span className={`inline-block px-5 py-2.5 sm:px-4 sm:py-2 rounded-full text-cream text-base sm:text-base font-medium ${getSessionColor()}`}>
               {getSessionLabel()}
             </span>
           </div>
 
           {/* Timer display */}
           <div className="text-center mb-8 sm:mb-6">
-            <div className="text-7xl sm:text-6xl font-bold text-gray-800 mb-3 sm:mb-2 tabular-nums">
+            <div className="text-7xl sm:text-6xl font-bold text-cream mb-3 sm:mb-2 tabular-nums">
               {formatTime(timeLeft)}
             </div>
-            <div className="text-base sm:text-sm text-gray-500">
+            <div className="text-base sm:text-sm text-cream/70">
               Sesiones completadas: {completedSessions}
             </div>
           </div>
@@ -361,8 +361,8 @@ export default function PomodoroTimer({
             <button
               onClick={toggleTimer}
               className={`
-                flex items-center justify-center gap-2 px-8 py-4 sm:px-6 sm:py-3 rounded-lg text-white font-medium transition-colors touch-manipulation text-lg sm:text-base
-                ${isRunning ? 'bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700' : 'bg-green-500 hover:bg-green-600 active:bg-green-700'}
+                flex items-center justify-center gap-2 px-8 py-4 sm:px-6 sm:py-3 rounded-lg text-cream font-medium transition-colors touch-manipulation text-lg sm:text-base
+                ${isRunning ? 'bg-gold hover:bg-gold/90 active:bg-gold/80' : 'bg-orange hover:bg-orange/90 active:bg-orange/80'}
               `}
             >
               {isRunning ? (
@@ -379,7 +379,7 @@ export default function PomodoroTimer({
             </button>
             <button
               onClick={resetTimer}
-              className="flex items-center justify-center gap-2 px-8 py-4 sm:px-6 sm:py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 active:bg-gray-400 transition-colors font-medium touch-manipulation text-lg sm:text-base"
+              className="flex items-center justify-center gap-2 px-8 py-4 sm:px-6 sm:py-3 bg-cream/20 text-cream rounded-lg hover:bg-cream/30 active:bg-cream/40 transition-colors font-medium touch-manipulation text-lg sm:text-base"
             >
               <RotateCcw className="w-6 h-6 sm:w-5 sm:h-5" />
               Reiniciar
@@ -395,7 +395,7 @@ export default function PomodoroTimer({
                 setCustomBreakDuration(null);
               }}
               className={`flex-1 px-3 py-3 sm:py-2 rounded-lg text-sm sm:text-sm font-medium transition-colors touch-manipulation ${
-                sessionType === 'work' ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
+                sessionType === 'work' ? 'bg-red text-cream' : 'bg-red/20 text-red hover:bg-red/30 active:bg-red/40'
               }`}
             >
               Trabajo
@@ -407,7 +407,7 @@ export default function PomodoroTimer({
                 setCustomBreakDuration(null);
               }}
               className={`flex-1 px-3 py-3 sm:py-2 rounded-lg text-sm sm:text-sm font-medium transition-colors touch-manipulation ${
-                sessionType === 'short_break' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
+                sessionType === 'short_break' ? 'bg-gold text-navy' : 'bg-gold/20 text-gold hover:bg-gold/30 active:bg-gold/40'
               }`}
             >
               Descanso
@@ -419,7 +419,7 @@ export default function PomodoroTimer({
                 setCustomBreakDuration(null);
               }}
               className={`flex-1 px-3 py-3 sm:py-2 rounded-lg text-sm sm:text-sm font-medium transition-colors touch-manipulation ${
-                sessionType === 'long_break' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
+                sessionType === 'long_break' ? 'bg-orange text-cream' : 'bg-orange/20 text-orange hover:bg-orange/30 active:bg-orange/40'
               }`}
             >
               Largo

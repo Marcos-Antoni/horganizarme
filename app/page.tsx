@@ -1,63 +1,191 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+import { format } from 'date-fns';
+import Calendar from '@/components/Calendar';
+import TaskList from '@/components/TaskList';
+import PomodoroTimer from '@/components/PomodoroTimer';
+import { Task, PomodoroSettings } from '@/types';
 
 export default function Home() {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [allTasks, setAllTasks] = useState<Task[]>([]);
+  const [pomodoroSettings, setPomodoroSettings] = useState<PomodoroSettings | null>(null);
+  const [tasksCount, setTasksCount] = useState<Record<string, number>>({});
+
+  // Cargar configuración de Pomodoro
+  useEffect(() => {
+    fetchPomodoroSettings();
+  }, []);
+
+  // Cargar todas las tareas para el contador del calendario
+  useEffect(() => {
+    fetchAllTasks();
+  }, []);
+
+  // Cargar tareas del día seleccionado
+  useEffect(() => {
+    fetchTasks(selectedDate);
+  }, [selectedDate]);
+
+  const fetchPomodoroSettings = async () => {
+    try {
+      const res = await fetch('/api/pomodoro/settings');
+      const data = await res.json();
+      setPomodoroSettings(data.settings);
+    } catch (error) {
+      console.error('Error fetching pomodoro settings:', error);
+    }
+  };
+
+  const fetchAllTasks = async () => {
+    try {
+      const res = await fetch('/api/tasks');
+      const data = await res.json();
+      setAllTasks(data.tasks);
+
+      // Calcular contador de tareas por fecha
+      const counts: Record<string, number> = {};
+      data.tasks.forEach((task: Task) => {
+        counts[task.task_date] = (counts[task.task_date] || 0) + 1;
+      });
+      setTasksCount(counts);
+    } catch (error) {
+      console.error('Error fetching all tasks:', error);
+    }
+  };
+
+  const fetchTasks = async (date: Date) => {
+    try {
+      const dateString = format(date, 'yyyy-MM-dd');
+      const res = await fetch(`/api/tasks?date=${dateString}`);
+      const data = await res.json();
+      setTasks(data.tasks);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    }
+  };
+
+  const handleTaskCreate = async (title: string, description: string) => {
+    try {
+      const dateString = format(selectedDate, 'yyyy-MM-dd');
+      const res = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, description, task_date: dateString }),
+      });
+
+      if (res.ok) {
+        await fetchTasks(selectedDate);
+        await fetchAllTasks();
+      }
+    } catch (error) {
+      console.error('Error creating task:', error);
+    }
+  };
+
+  const handleTaskToggle = async (taskId: number, completed: boolean) => {
+    try {
+      const res = await fetch(`/api/tasks/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed }),
+      });
+
+      if (res.ok) {
+        await fetchTasks(selectedDate);
+        await fetchAllTasks();
+      }
+    } catch (error) {
+      console.error('Error toggling task:', error);
+    }
+  };
+
+  const handleTaskDelete = async (taskId: number) => {
+    try {
+      const res = await fetch(`/api/tasks/${taskId}`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        await fetchTasks(selectedDate);
+        await fetchAllTasks();
+      }
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
+  };
+
+  const handlePomodoroSettingsUpdate = async (settings: Partial<PomodoroSettings>) => {
+    try {
+      const res = await fetch('/api/pomodoro/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
+      });
+
+      if (res.ok) {
+        await fetchPomodoroSettings();
+      }
+    } catch (error) {
+      console.error('Error updating pomodoro settings:', error);
+    }
+  };
+
+  const handleSessionComplete = async (sessionType: string, duration: number) => {
+    try {
+      await fetch('/api/pomodoro/sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_type: sessionType, duration }),
+      });
+    } catch (error) {
+      console.error('Error creating pomodoro session:', error);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <h1 className="text-2xl font-bold text-gray-900">Horganizar</h1>
+          <p className="text-sm text-gray-600">Organiza tu tiempo y aumenta tu productividad</p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Calendario */}
+          <div className="lg:col-span-1">
+            <Calendar
+              selectedDate={selectedDate}
+              onDateSelect={setSelectedDate}
+              tasksCount={tasksCount}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </div>
+
+          {/* Tareas del día */}
+          <div className="lg:col-span-2">
+            <TaskList
+              selectedDate={selectedDate}
+              tasks={tasks}
+              onTaskCreate={handleTaskCreate}
+              onTaskToggle={handleTaskToggle}
+              onTaskDelete={handleTaskDelete}
+            />
+          </div>
+
+          {/* Temporizador Pomodoro */}
+          <div className="lg:col-span-3">
+            <PomodoroTimer
+              settings={pomodoroSettings}
+              onSettingsUpdate={handlePomodoroSettingsUpdate}
+              onSessionComplete={handleSessionComplete}
+            />
+          </div>
         </div>
       </main>
     </div>
